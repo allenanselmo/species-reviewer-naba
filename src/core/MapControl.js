@@ -183,7 +183,7 @@ const MapControl = function(options = {}) {
       .loadModules(["esri/layers/FeatureLayer"], esriLoaderOptions)
       .then(([FeatureLayer]) => {
         hucsLayer = new FeatureLayer({
-          url: config.URL.WatershedBoundaryDataset_HUC10,
+          url: config.URL.WatershedBoundaryDataset_HUC8,
           opacity: 0.9,
           listMode: "hide",
           renderer: {
@@ -293,7 +293,7 @@ const MapControl = function(options = {}) {
 
     initHucsReviewReferenceLayers(mapView);
 
-    initPredictedHabitatLayers(mapView);
+    //initPredictedHabitatLayers(mapView);
 
     initSearch(mapView);
 
@@ -328,7 +328,7 @@ const MapControl = function(options = {}) {
 
   const queryHucsLayerByHucID = hucID => {
     const query = hucsLayer.createQuery();
-    query.where = `${config.FIELD_NAME.huc10LayerHucID} = '${hucID}'`;
+    query.where = `${config.FIELD_NAME.hucLayerHucID} = '${hucID}'`;
     query.returnGeometry = true;
     query.outFields = ["*"];
 
@@ -354,7 +354,7 @@ const MapControl = function(options = {}) {
 
   //     hucsLayer = webmap.layers.items.filter(d=>{
   //         console.log(d.title)
-  //         return d.title.indexOf('HUC10') !== -1
+  //         return d.title.indexOf('HUC8') !== -1
   //     })[0];
 
   //     // hucsLayer.listMode = 'hide';
@@ -457,7 +457,7 @@ const MapControl = function(options = {}) {
       if (
         g &&
         g.attributes &&
-        g.attributes[config.FIELD_NAME.huc10LayerHucID] === hucID
+        g.attributes[config.FIELD_NAME.hucLayerHucID] === hucID
       ) {
         hucsByStatusGraphicLayer.remove(g);
       }
@@ -566,7 +566,7 @@ const MapControl = function(options = {}) {
 
     const renderer = {
       type: "unique-value", // autocasts as new UniqueValueRenderer()
-      field: config.FIELD_NAME.huc10LayerHucID,
+      field: config.FIELD_NAME.hucLayerHucID,
       defaultSymbol: defaultSymbol, //{ type: "none" },  // autocasts as new SimpleFillSymbol()
       uniqueValueInfos: uniqueValueInfos
     };
@@ -576,66 +576,55 @@ const MapControl = function(options = {}) {
 
   const initPredictedHabitatLayers = mapView => {
     // console.log(url);
-
     // if(actualModelBoundaryLayer){
     //     mapView.map.remove(actualModelBoundaryLayer);
     // }
-
-    esriLoader
-      .loadModules(["esri/layers/FeatureLayer"], esriLoaderOptions)
-      .then(([FeatureLayer]) => {
-        const predictedHabitatLayers = [
-          config.URL.PredictedHabitat.line,
-          config.URL.PredictedHabitat.polygon
-        ].map(url => {
-          return new FeatureLayer({
-            url,
-            opacity: 0.9,
-            listMode: "hide",
-            definitionExpression: `cutecode=''`,
-            isPredictedHabitatLayer: true
-          });
-        });
-
-        mapView.map.addMany(predictedHabitatLayers);
-      });
-
+    // esriLoader
+    //   .loadModules(["esri/layers/FeatureLayer"], esriLoaderOptions)
+    //   .then(([FeatureLayer]) => {
+    //     const predictedHabitatLayers = [
+    //       config.URL.PredictedHabitat.line,
+    //       config.URL.PredictedHabitat.polygon
+    //     ].map(url => {
+    //       return new FeatureLayer({
+    //         url,
+    //         opacity: 0.9,
+    //         listMode: "hide",
+    //         definitionExpression: `cutecode=''`,
+    //         isPredictedHabitatLayer: true
+    //       });
+    //     });
+    //     mapView.map.addMany(predictedHabitatLayers);
+    //   });
     // mapView.map.reorder(actualModelBoundaryLayer, 0);
   };
 
   const showPredictedHabitatLayers = (speciesCode = "") => {
-    mapView.map.layers.forEach(layer => {
-      // console.log(layer);
-
-      if (layer.isPredictedHabitatLayer) {
-        // console.log(la)
-
-        layer.definitionExpression = `cutecode='${speciesCode}'`;
-      }
-
-      layer.refresh();
-    });
-
-    zoomToPredictedHabitatLayer();
+    // mapView.map.layers.forEach(layer => {
+    //   // console.log(layer);
+    //   if (layer.isPredictedHabitatLayer) {
+    //     // console.log(la)
+    //     layer.definitionExpression = `cutecode='${speciesCode}'`;
+    //   }
+    //   layer.refresh();
+    // });
+    // zoomToPredictedHabitatLayer();
   };
 
   const zoomToPredictedHabitatLayer = (speciesCode = "") => {
-    mapView.map.layers.forEach(layer => {
-      // console.log(layer);
-
-      if (layer.isPredictedHabitatLayer) {
-        // console.log(la)
-
-        layer.queryExtent().then(function(results) {
-          // go to the extent of the results satisfying the query
-          // view.goTo(results.extent);
-
-          if (results.extent) {
-            mapView.goTo(results.extent);
-          }
-        });
-      }
-    });
+    // mapView.map.layers.forEach(layer => {
+    //   // console.log(layer);
+    //   if (layer.isPredictedHabitatLayer) {
+    //     // console.log(la)
+    //     layer.queryExtent().then(function(results) {
+    //       // go to the extent of the results satisfying the query
+    //       // view.goTo(results.extent);
+    //       if (results.extent) {
+    //         mapView.goTo(results.extent);
+    //       }
+    //     });
+    //   }
+    // });
   };
 
   const setLayersOpacity = val => {

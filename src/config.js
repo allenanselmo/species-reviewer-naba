@@ -1,25 +1,23 @@
 "use strict";
 
 module.exports = {
-  // 'oauthAppID': 'pXyO9t8Sf4goOQiu', // old one under content org
-  oauthAppID: "Dks28Xk6zIbYoWbO",
+  oauthAppID: "6SfJ02ynq5pvFxPz",
   webMapID: "8aa946565e6d46d7affa9a67d8fb914b",
 
   FIELD_NAME: {
-    huc10LayerHucID: "HUC10",
-    huc10LayerHucName: "NAME",
-    speciesLookupHucID: "HUC10",
+    hucLayerHucID: "HUC_8",
+    hucLayerHucName: "HUC_8",
     statusType: "StatusType",
     speciesLookup: {
-      speciesCode: "cutecode",
-      speciesName: "Scientific_Name",
-      taxa: "Taxonomic_Group",
+      speciesCode: "ELEMENT_GL",
+      speciesName: "SCIENTIFIC",
+      taxa: "TAXONOMIC_",
       boundaryLayerLink: "BoundaryLayerLink",
       pdfLink: "PdfLink"
     },
     speciesDistribution: {
-      speciesCode: "SpeciesCode",
-      hucID: "HUCID"
+      speciesCode: "EGTID",
+      hucID: "LOCATION"
     },
     feedbackTable: {
       hucID: "HUCID",
@@ -42,10 +40,10 @@ module.exports = {
       speciesCode: "cutecode",
       email: "Reviewer_email"
     },
-    pdfLookup: {
-      speciesCode: "cutecode",
-      url: "url"
-    },
+    // pdfLookup: {
+    //   speciesCode: "cutecode",
+    //   url: "url"
+    // },
     data_load_date: {
       species_code: "cutecode",
       data_load_date: "DataLoadDate"
@@ -67,38 +65,36 @@ module.exports = {
   },
 
   URL: {
-    // "speciesLookupTable": 'https://services.arcgis.com/jIL9msH9OI208GCb/arcgis/rest/services/SpeciesLookupTable/FeatureServer/0',
     speciesLookupTable:
-      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/Species_Master_Lookup/FeatureServer/0",
+      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_Species_Master_List/FeatureServer/0",
 
-    // "speciesDistribution": "https://services.arcgis.com/jIL9msH9OI208GCb/arcgis/rest/services/SpeciesDistribution/FeatureServer/0",
     speciesDistribution:
-      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/Species_Modeling_Extent/FeatureServer/0",
+      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_Species_Modeling_Extent/FeatureServer/0",
 
     speciesByUser:
-      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/Species_by_Reviewers/FeatureServer/0",
+      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_Species_By_Reviewer/FeatureServer/0",
 
     statusTable:
-      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/Status_Code_Lookup/FeatureServer/0",
+      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_Status_Code_Lookup/FeatureServer/0",
     feedbackTable:
-      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/Detailed_Feedback/FeatureServer/0",
+      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_Detailed_Feedback/FeatureServer/0",
     overallFeedback:
-      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/Overall_Feedback/FeatureServer/0",
+      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_Overall_Feedback/FeatureServer/0",
 
-    PredictedHabitat: {
-      // "137976": "https://services.arcgis.com/jIL9msH9OI208GCb/arcgis/rest/services/Isotria_medeloides_Boundary/FeatureServer/0",
-      // "941975": "https://services.arcgis.com/jIL9msH9OI208GCb/arcgis/rest/services/Lithobates_kauffeldi_Boundary/FeatureServer/0",
-      line:
-        "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/Predicted_Habitat_Line/FeatureServer/0",
-      polygon:
-        "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/Predicted_Habitat_Polygon/FeatureServer/0"
-    },
-    pdfLookup:
-      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/PDF_Lookup/FeatureServer/0",
-    WatershedBoundaryDataset_HUC10:
-      "https://utility.arcgis.com/usrsvcs/servers/9c326d3f7db34042857789f580ade469/rest/services/WatershedBoundaryDataset_HUC10/FeatureServer/0",
+    // PredictedHabitat: {
+    //   // "137976": "https://services.arcgis.com/jIL9msH9OI208GCb/arcgis/rest/services/Isotria_medeloides_Boundary/FeatureServer/0",
+    //   // "941975": "https://services.arcgis.com/jIL9msH9OI208GCb/arcgis/rest/services/Lithobates_kauffeldi_Boundary/FeatureServer/0",
+    //   line:
+    //     "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/Predicted_Habitat_Line/FeatureServer/0",
+    //   polygon:
+    //     "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/Predicted_Habitat_Polygon/FeatureServer/0"
+    // },
+    // pdfLookup:
+    //   "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/PDF_Lookup/FeatureServer/0",
+    WatershedBoundaryDataset_HUC8:
+      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_HUC8/FeatureServer/0",
     data_load_date:
-      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/Data_Load_Date/FeatureServer/0"
+      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_Data_Load_Date/FeatureServer/0"
   },
 
   reference_layers: {

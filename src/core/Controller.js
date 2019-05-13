@@ -41,7 +41,8 @@ export default function Controller(props = {}) {
       });
 
       const sepeciesData =
-        portalUser.username === "MobiAdmin8"
+        portalUser.username === "MobiAdmin8" ||
+        portalUser.username === "NSReviewToolAdmin"
           ? await apiManager.queryAllFeaturesFromSpeciesLookupTable()
           : await apiManager.querySpeciesLookupTable({
               speciesCode: getDistinctSpeciesCodeToReview(speciesByUsers)
@@ -350,8 +351,8 @@ export default function Controller(props = {}) {
   };
 
   const getFeedbacksByHucForReviewMode = async hucFeature => {
-    const hucID = hucFeature.attributes[config.FIELD_NAME.huc10LayerHucID];
-    const hucName = hucFeature.attributes[config.FIELD_NAME.huc10LayerHucName];
+    const hucID = hucFeature.attributes[config.FIELD_NAME.hucLayerHucID];
+    const hucName = hucFeature.attributes[config.FIELD_NAME.hucLayerHucName];
 
     try {
       const feedbacks = await apiManager.fetchFeedback({
@@ -527,7 +528,7 @@ export default function Controller(props = {}) {
     state.selectedHucFeature = feature;
 
     const hucID =
-      state.selectedHucFeature.attributes[config.FIELD_NAME.huc10LayerHucID];
+      state.selectedHucFeature.attributes[config.FIELD_NAME.hucLayerHucID];
 
     if (!isReviewMode) {
       dataModel.setSelectedHuc(hucID);
@@ -557,7 +558,7 @@ export default function Controller(props = {}) {
     const species = dataModel.getSelectedSpecies();
     const hucID = dataModel.getSelectedHuc();
     const hucName =
-      state.selectedHucFeature.attributes[config.FIELD_NAME.huc10LayerHucName];
+      state.selectedHucFeature.attributes[config.FIELD_NAME.hucLayerHucName];
     const isHucInModeledRange = dataModel.isHucInModeledRange(hucID, species);
 
     // console.log('isHucInModeledRange', isHucInModeledRange);
@@ -601,16 +602,13 @@ export default function Controller(props = {}) {
 
   const downloadPdf = async () => {
     // console.log('controller: download pdf');
-
-    const url = await getPdfUrlForSelectedSpecies();
-
-    console.log(url);
-
-    if (url) {
-      window.open(url);
-    } else {
-      console.error("no pdf file is found for selected species", species);
-    }
+    // const url = await getPdfUrlForSelectedSpecies();
+    // console.log(url);
+    // if (url) {
+    //   window.open(url);
+    // } else {
+    //   console.error("no pdf file is found for selected species", species);
+    // }
   };
 
   const getOverallFeedback = () => {
@@ -685,7 +683,7 @@ export default function Controller(props = {}) {
 
     controllerProps.speciesOnSelect();
 
-    controllerProps.pdfUrlOnChange(await getPdfUrlForSelectedSpecies());
+    //controllerProps.pdfUrlOnChange(await getPdfUrlForSelectedSpecies());
 
     if (isReviewMode) {
       getOverallFeedbacksForReviewMode();
