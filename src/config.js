@@ -2,9 +2,11 @@
 
 module.exports = {
   oauthAppID: "6SfJ02ynq5pvFxPz",
-  webMapID: "8aa946565e6d46d7affa9a67d8fb914b",
+  webMapID: "6c4e0d073ff94d4cb979e29128a43eb7",
 
   FIELD_NAME: {
+    // hucLayerHucID: "HUC8",
+    // hucLayerHucName: "HUC8",
     hucLayerHucID: "HUC_8",
     hucLayerHucName: "HUC_8",
     statusType: "StatusType",
@@ -93,8 +95,19 @@ module.exports = {
     //   "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/PDF_Lookup/FeatureServer/0",
     WatershedBoundaryDataset_HUC8:
       "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_HUC8/FeatureServer/0",
+    //"https://hydro.nationalmap.gov/arcgis/rest/services/wbd/MapServer/4",
     data_load_date:
       "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_Data_Load_Date/FeatureServer/0"
+  },
+
+  layerParameters: {
+    WatershedBoundaryDataset_HUC8: {
+      minScale: 2311165,
+      maxScale: 0
+    },
+    data_load_date: {
+      defaultDate: "5/14/2019  7:00:00 AM"
+    }
   },
 
   reference_layers: {

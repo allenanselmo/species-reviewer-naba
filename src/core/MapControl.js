@@ -11,14 +11,6 @@ const esriLoaderOptions = {
   url: "https://js.arcgis.com/4.10"
 };
 
-// esriLoader.loadModules([
-//     "esri/layers/FeatureLayer",
-// ], esriLoaderOptions).then(([
-//     FeatureLayer
-// ])=>{
-
-// });
-
 const MapControl = function(options = {}) {
   const webMapID = options.webMapID || null;
   const mapViewContainerID = options.mapViewContainerID || null;
@@ -193,14 +185,23 @@ const MapControl = function(options = {}) {
               color: [0, 0, 0, 0],
               outline: {
                 // autocasts as new SimpleLineSymbol()
-                color: [0, 0, 0, 0],
+                color: [0, 0, 0, 1],
                 width: "0"
               }
             }
-          }
+          },
+          minScale:
+            config.layerParameters.WatershedBoundaryDataset_HUC8.minScale,
+          maxScale:
+            config.layerParameters.WatershedBoundaryDataset_HUC8.maxScale
         });
 
         mapView.map.add(hucsLayer);
+
+        initHucsReviewReferenceLayers(mapView);
+        // hucsLayer.on("layerview-create", function(evt) {
+
+        // });
       });
   };
 
@@ -236,10 +237,6 @@ const MapControl = function(options = {}) {
         });
     });
   };
-
-  // const disableMapOnHoldEvent = ()=>{
-  //     isOnHoldEventDisabled = true;
-  // };
 
   const initBasemapGallery = view => {
     esriLoader
@@ -291,7 +288,7 @@ const MapControl = function(options = {}) {
 
     initHucLayer(mapView);
 
-    initHucsReviewReferenceLayers(mapView);
+    //initHucsReviewReferenceLayers(mapView);
 
     //initPredictedHabitatLayers(mapView);
 
@@ -309,6 +306,7 @@ const MapControl = function(options = {}) {
   };
 
   const queryHucsLayerByMouseEvent = event => {
+    if (!hucsLayer) return;
     const query = hucsLayer.createQuery();
     query.geometry = mapView.toMap(event); // the point location of the pointer
     query.spatialRelationship = "intersects"; // this is the default
@@ -327,8 +325,14 @@ const MapControl = function(options = {}) {
   };
 
   const queryHucsLayerByHucID = hucID => {
+    return queryHucsLayerByHucIDs([hucID]);
+  };
+
+  const queryHucsLayerByHucIDs = hucIDs => {
     const query = hucsLayer.createQuery();
-    query.where = `${config.FIELD_NAME.hucLayerHucID} = '${hucID}'`;
+    let where = `${config.FIELD_NAME.hucLayerHucID} = '${hucIDs[0]}'`;
+    if (hucIDs.length > 1) where = generateHucWhereFromHucIDs(hucIDs);
+    query.where = where;
     query.returnGeometry = true;
     query.outFields = ["*"];
 
@@ -338,7 +342,7 @@ const MapControl = function(options = {}) {
         .then(function(response) {
           if (response.features && response.features.length) {
             // console.log(response.features[0]);
-            resolve(response.features[0]);
+            resolve(response.features);
           } else {
             reject("no huc feature is found");
           }
@@ -349,18 +353,32 @@ const MapControl = function(options = {}) {
     });
   };
 
-  // const setHucsLayer = (webmap)=>{
-  //     console.log(webmap.layers.items);
+  const generateHucWhereFromHucIDs = hucIds => {
+    let whereText = "";
+    let tempHucIds = hucIds.slice(0);
+    let currHucIds = [];
+    let maxHit = false;
+    while (tempHucIds.length > 200) {
+      currHucIds = tempHucIds.shift(0, 199);
+      whereText =
+        whereText +
+        `${maxHit ? " OR " : ""}${
+          config.FIELD_NAME.hucLayerHucID
+        } in ('${currHucIds.join("','")}')`;
+      maxHit = true;
+    }
+    whereText =
+      whereText +
+      `${maxHit ? " OR " : ""}${
+        config.FIELD_NAME.hucLayerHucID
+      } in ('${tempHucIds.join("','")}')`;
+    return whereText;
+  };
 
-  //     hucsLayer = webmap.layers.items.filter(d=>{
-  //         console.log(d.title)
-  //         return d.title.indexOf('HUC8') !== -1
-  //     })[0];
-
-  //     // hucsLayer.listMode = 'hide';
-
-  //     console.log('setHucsLayer', hucsLayer);
-  // };
+  const zoomToHucs = async hucIds => {
+    const hucFeats = await queryHucsLayerByHucIDs(hucIds);
+    mapView.goTo(hucFeats);
+  };
 
   const queryHucsLayerByMouseEventOnSuccessHandler = feature => {
     addPreviewHucGraphic(feature);
@@ -381,8 +399,8 @@ const MapControl = function(options = {}) {
     removeHucGraphicByStatus(hucID);
 
     if (+status > 0) {
-      queryHucsLayerByHucID(hucID).then(feature => {
-        addHucGraphicByStatus(feature, status, options);
+      queryHucsLayerByHucID(hucID).then(features => {
+        addHucGraphicByStatus(features[0], status, options);
       });
     }
 
@@ -457,7 +475,8 @@ const MapControl = function(options = {}) {
       if (
         g &&
         g.attributes &&
-        g.attributes[config.FIELD_NAME.hucLayerHucID] === hucID
+        Number.parseInt(g.attributes[config.FIELD_NAME.hucLayerHucID]) ===
+          Number.parseInt(hucID)
       ) {
         hucsByStatusGraphicLayer.remove(g);
       }
@@ -518,13 +537,13 @@ const MapControl = function(options = {}) {
   };
 
   // highlight hucs from the species extent table
-  const highlightHucs = data => {
+  const highlightHucs = hucIds => {
     // cleanPreviewHucGraphic();
     clearAllGraphics();
-    hucsLayer.renderer = getUniqueValueRenderer(data);
+    hucsLayer.renderer = getUniqueValueRenderer(hucIds);
   };
 
-  const getUniqueValueRenderer = data => {
+  const getUniqueValueRenderer = hucIds => {
     const defaultSymbol = {
       type: "simple-fill", // autocasts as new SimpleFillSymbol()
       color: [0, 0, 0, 0],
@@ -545,21 +564,9 @@ const MapControl = function(options = {}) {
       }
     };
 
-    // const symbol = {
-    //     type: "picture-fill",  // autocasts as new PictureFillSymbol()
-    //     url: dashImg, //"https://static.arcgis.com/images/Symbols/Shapes/BlackStarLargeB.png",
-    //     width: "16px",
-    //     height: "16px",
-    //     opacity: .75,
-    //     outline: {
-    //         color: config.COLOR.hucBorderIsModeled,
-    //         width: "1px"
-    //     },
-    // };
-
-    const uniqueValueInfos = data.map(d => {
+    const uniqueValueInfos = hucIds.map(hucId => {
       return {
-        value: d[config.FIELD_NAME.speciesDistribution.hucID],
+        value: Number.parseInt(hucId),
         symbol: symbol
       };
     });
@@ -643,6 +650,8 @@ const MapControl = function(options = {}) {
     clearAllGraphics,
     // disableMapOnHoldEvent,
     queryHucsLayerByHucID,
+    queryHucsLayerByHucIDs,
+    zoomToHucs,
     addPreviewHucGraphic,
     setLayersOpacity,
     clearMapGraphics,

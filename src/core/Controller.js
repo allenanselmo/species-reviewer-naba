@@ -40,12 +40,17 @@ export default function Controller(props = {}) {
         email: portalUser.email
       });
 
+      const distinctUserSpecies = getDistinctSpeciesCodeToReview(
+        speciesByUsers
+      );
       const sepeciesData =
-        portalUser.username === "MobiAdmin8" ||
-        portalUser.username === "NSReviewToolAdmin"
+        portalUser.username === "NSReviewToolAdmin" ||
+        (distinctUserSpecies &&
+          distinctUserSpecies.length > 0 &&
+          distinctUserSpecies[0] === "-1")
           ? await apiManager.queryAllFeaturesFromSpeciesLookupTable()
           : await apiManager.querySpeciesLookupTable({
-              speciesCode: getDistinctSpeciesCodeToReview(speciesByUsers)
+              speciesCode: distinctUserSpecies
             });
       // console.log(sepeciesData);
 
@@ -487,18 +492,28 @@ export default function Controller(props = {}) {
       // const speciesInfo = dataModel.getSpeciesInfo(options.speciesKey);
       // const actualBoundaryLayerUrl = speciesInfo[config.FIELD_NAME.speciesLookup.boundaryLayerLink];
       // const actualBoundaryLayerUrl =config.URL.PredictedHabitat[options.speciesKey];
-
       // // TODO: need to create the boundary layer in nature serve's org
       // if(actualBoundaryLayerUrl){
       //     controllerProps.addActualBoundaryLayerToMap(actualBoundaryLayerUrl);
       // }
-
-      controllerProps.showToPredictedHabitatOnMap(options.speciesKey);
+      //controllerProps.showToPredictedHabitatOnMap(options.speciesKey);
     }
 
     // mapControl.highlightHucs(hucs);
+    const hucIds = [
+      ...new Set(
+        hucs.map(data => {
+          let currId = data[config.FIELD_NAME.speciesDistribution.hucID];
+          while (currId.length != 8) {
+            currId = `0${currId}`;
+          }
+          return currId;
+        })
+      )
+    ];
+    controllerProps.zoomToHucsOnMap(hucIds);
 
-    controllerProps.highligtHucsOnMap(hucs);
+    controllerProps.highligtHucsOnMap(hucIds);
 
     if (!isReviewMode) {
       renderHucWithFeedbackDataOnMap();

@@ -12,10 +12,10 @@ import OAuthManager from "./core/OauthManager";
   const oauthManager = new OAuthManager(config.oauthAppID);
   await oauthManager.init();
 
-  document.querySelector(".js-accept-terms").addEventListener("click", evt => {
-    // console.log('agress');
-    initApp(oauthManager);
-  });
+  //document.querySelector(".js-accept-terms").addEventListener("click", evt => {
+  // console.log('agress');
+  initApp(oauthManager);
+  //});
 })();
 
 const initApp = async oauthManager => {
@@ -98,9 +98,9 @@ const initApp = async oauthManager => {
       }
     },
 
-    highligtHucsOnMap: data => {
+    highligtHucsOnMap: hucIds => {
       // console.log('highligtHucsOnMap', data);
-      mapControl.highlightHucs(data);
+      mapControl.highlightHucs(hucIds);
     },
     // addActualBoundaryLayerToMap:(url='')=>{
     //     // console.log('addActualBoundaryLayerToMap', url);
@@ -108,6 +108,9 @@ const initApp = async oauthManager => {
     // },
     showToPredictedHabitatOnMap: (speciesCode = "") => {
       //mapControl.showPredictedHabitatLayers(speciesCode);
+    },
+    zoomToHucsOnMap: (hucIds = []) => {
+      mapControl.zoomToHucs(hucIds);
     },
     clearMapGraphics: (targetLayer = "") => {
       // console.log('clearMapGraphics', targetLayer);
