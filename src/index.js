@@ -31,11 +31,11 @@ const initApp = async oauthManager => {
 
   const mapControl = new MapControl({
     webMapID: config.webMapID,
-    mapViewContainerID: config.DOM_ID.mapViewContainer
-        onScaleChange:(newScale=0)=>{
-            // console.log('newScale', newScale);
-            view.legend.render(newScale);
-        }
+    mapViewContainerID: config.DOM_ID.mapViewContainer,
+    onScaleChange:(newScale=0)=>{
+        // console.log('newScale', newScale);
+        view.legend.render(newScale);
+    }
   });
 
   const controller = new Controller({

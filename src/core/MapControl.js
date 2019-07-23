@@ -15,7 +15,7 @@ const MapControl = function({
   webMapID = "",
   mapViewContainerID = "",
   onScaleChange = null
-}={}) {
+} = {}) {
   // const webMapID = options.webMapID || null;
   // const mapViewContainerID = options.mapViewContainerID || null;
 
@@ -244,7 +244,7 @@ const MapControl = function({
 
     // // when the map view is stationary , call onZoomChange handler to get the legend updated based on the default zoom level
     mapView.watch("stationary", evt => {
-      if(onScaleChange){
+      if (onScaleChange) {
         onScaleChange(mapView.scale);
       }
     });
@@ -615,7 +615,6 @@ const MapControl = function({
     // if(actualModelBoundaryLayer){
     //     mapView.map.remove(actualModelBoundaryLayer);
     // }
-
     //esriLoader
     //  .loadModules(["esri/layers/FeatureLayer"], esriLoaderOptions)
     //  .then(([FeatureLayer]) => {
@@ -634,10 +633,8 @@ const MapControl = function({
     //        legendEnabled: false
     //      });
     //    });
-
-        mapView.map.addMany(predictedHabitatLayers);
-      });
-
+    //    mapView.map.addMany(predictedHabitatLayers);
+    //});
     // mapView.map.reorder(actualModelBoundaryLayer, 0);
   };
 
@@ -676,12 +673,12 @@ const MapControl = function({
     });
   };
 
-  const addCsvLayer = (features=[])=>{
+  const addCsvLayer = (features = []) => {
     const layerId = "csvLayer";
 
     let csvLayer = mapView.map.findLayerById(layerId);
 
-    if(csvLayer){
+    if (csvLayer) {
       mapView.map.remove(csvLayer);
     }
 
@@ -690,15 +687,15 @@ const MapControl = function({
         ["esri/layers/GraphicsLayer", "esri/Graphic"],
         esriLoaderOptions
       )
-      .then(([GraphicsLayer,Graphic]) => {
+      .then(([GraphicsLayer, Graphic]) => {
         const fireflySymbl = {
-          type: "picture-marker",  // autocasts as new PictureMarkerSymbol()
+          type: "picture-marker", // autocasts as new PictureMarkerSymbol()
           url: config.fireflyStyle.blue,
           width: "32px",
           height: "32px"
         };
 
-        const graphics = features.map((feature, idx)=>{
+        const graphics = features.map((feature, idx) => {
           feature.attributes.FID = idx;
           feature.symbol = fireflySymbl;
           return new Graphic(feature);
