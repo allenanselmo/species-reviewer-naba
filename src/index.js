@@ -7,7 +7,7 @@ import Controller from "./core/Controller";
 import View from "./core/View";
 import MapControl from "./core/MapControl";
 import OAuthManager from "./core/OauthManager";
-import CsvLoader from './core/CsvLoader';
+import CsvLoader from "./core/CsvLoader";
 
 (async function initOAuthManager() {
   const oauthManager = new OAuthManager(config.oauthAppID);
@@ -137,6 +137,7 @@ const initApp = async oauthManager => {
   view.speciesSelector.init({
     onChange: val => {
       // console.log(val);
+      mapControl.clearAllGraphics();
       controller.setSelectedSpecies(val);
     }
   });
@@ -232,7 +233,7 @@ const initApp = async oauthManager => {
 
     const csvLoader = new CsvLoader({
         targetDomElementId: config.DOM_ID.mapViewContainer,
-        onLoadHandler: (csvData)=>{
+    onLoadHandler: csvData => {
             if(csvData.features && csvData.features.length){
                 // console.log('csv data deatures', csvData.features);
                 mapControl.addCsvLayer(csvData.features);

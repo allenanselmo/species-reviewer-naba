@@ -12,8 +12,8 @@ const esriLoaderOptions = {
 };
 
 const MapControl = function({
-  webMapID = '',
-  mapViewContainerID = '',
+  webMapID = "",
+  mapViewContainerID = "",
   onScaleChange = null
 }={}) {
   // const webMapID = options.webMapID || null;
@@ -182,6 +182,7 @@ const MapControl = function({
           url: config.URL.WatershedBoundaryDataset_HUC8,
           opacity: 0.9,
           listMode: "hide",
+          legendEnabled: false,
           renderer: {
             type: "simple", // autocasts as new SimpleRenderer()
             symbol: {
@@ -242,11 +243,11 @@ const MapControl = function({
     });
 
     // // when the map view is stationary , call onZoomChange handler to get the legend updated based on the default zoom level
-    mapView.watch('stationary', evt=>{
+    mapView.watch("stationary", evt => {
       if(onScaleChange){
         onScaleChange(mapView.scale);
       }
-    })
+    });
   };
 
   const initBasemapGallery = view => {
@@ -262,10 +263,35 @@ const MapControl = function({
 
         const bgExpand = new Expand({
           view,
-          content: basemapGallery
+          content: basemapGallery,
+          expandTooltip: "Change Basemap"
         });
 
         mapView.ui.add(bgExpand, "top-left");
+
+        initLegend(mapView);
+      });
+  };
+
+  const initLegend = view => {
+    esriLoader
+      .loadModules(
+        ["esri/widgets/Legend", "esri/widgets/Expand"],
+        esriLoaderOptions
+      )
+      .then(([Legend, Expand]) => {
+        const legend = new Legend({
+          view
+        });
+
+        const legExpand = new Expand({
+          view,
+          content: legend,
+          expandIconClass: "esri-icon-maps",
+          expandTooltip: "View Legend for Additional Layers"
+        });
+
+        mapView.ui.add(legExpand, "top-left");
       });
   };
 
@@ -306,14 +332,6 @@ const MapControl = function({
     initSearch(mapView);
 
     initLayerList(mapView);
-
-    // setHucsLayer(mapView.map);
-
-    // mapView.map.addMany([hucsByStatusGraphicLayer, hucPreviewGraphicLayer]);
-
-    // initPredictedHabitatLayers();
-
-    // initLegend();
   };
 
   const queryHucsLayerByMouseEvent = event => {
@@ -597,23 +615,29 @@ const MapControl = function({
     // if(actualModelBoundaryLayer){
     //     mapView.map.remove(actualModelBoundaryLayer);
     // }
-    // esriLoader
-    //   .loadModules(["esri/layers/FeatureLayer"], esriLoaderOptions)
-    //   .then(([FeatureLayer]) => {
-    //     const predictedHabitatLayers = [
-    //       config.URL.PredictedHabitat.line,
-    //       config.URL.PredictedHabitat.polygon
-    //     ].map(url => {
-    //       return new FeatureLayer({
-    //         url,
-    //         opacity: 0.9,
-    //         listMode: "hide",
-    //         definitionExpression: `cutecode=''`,
-    //         isPredictedHabitatLayer: true
-    //       });
-    //     });
-    //     mapView.map.addMany(predictedHabitatLayers);
-    //   });
+
+    //esriLoader
+    //  .loadModules(["esri/layers/FeatureLayer"], esriLoaderOptions)
+    //  .then(([FeatureLayer]) => {
+    //    const predictedHabitatLayers = [
+    //      config.URL.PredictedHabitat.line,
+    //      config.URL.PredictedHabitat.polygon,
+    //      config.URL.PredictedHabitat.line2,
+    //      config.URL.PredictedHabitat.polygon2
+    //    ].map(url => {
+    //      return new FeatureLayer({
+    //        url,
+    //        opacity: 0.9,
+    //        listMode: "hide",
+    //        definitionExpression: `cutecode=''`,
+    //        isPredictedHabitatLayer: true,
+    //        legendEnabled: false
+    //      });
+    //    });
+
+        mapView.map.addMany(predictedHabitatLayers);
+      });
+
     // mapView.map.reorder(actualModelBoundaryLayer, 0);
   };
 
@@ -653,8 +677,7 @@ const MapControl = function({
   };
 
   const addCsvLayer = (features=[])=>{
-
-    const layerId = 'csvLayer';
+    const layerId = "csvLayer";
 
     let csvLayer = mapView.map.findLayerById(layerId);
 
@@ -663,9 +686,11 @@ const MapControl = function({
     }
 
     esriLoader
-      .loadModules(["esri/layers/GraphicsLayer", "esri/Graphic"], esriLoaderOptions)
+      .loadModules(
+        ["esri/layers/GraphicsLayer", "esri/Graphic"],
+        esriLoaderOptions
+      )
       .then(([GraphicsLayer,Graphic]) => {
-
         const fireflySymbl = {
           type: "picture-marker",  // autocasts as new PictureMarkerSymbol()
           url: config.fireflyStyle.blue,
@@ -682,15 +707,15 @@ const MapControl = function({
         csvLayer = new GraphicsLayer({
           id: layerId,
           graphics,
-          title: 'CSV Layer',
+          title: "CSV Layer",
           opacity: 0.85
         });
 
         mapView.map.add(csvLayer);
-
-      }).catch(err=>{
-        console.error(err);
       })
+      .catch(err => {
+        console.error(err);
+      });
   };
 
   return {
