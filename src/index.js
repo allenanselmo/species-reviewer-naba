@@ -7,6 +7,7 @@ import Controller from "./core/Controller";
 import View from "./core/View";
 import MapControl from "./core/MapControl";
 import OAuthManager from "./core/OauthManager";
+import CsvLoader from './core/CsvLoader';
 
 (async function initOAuthManager() {
   const oauthManager = new OAuthManager(config.oauthAppID);
@@ -29,6 +30,10 @@ const initApp = async oauthManager => {
   const mapControl = new MapControl({
     webMapID: config.webMapID,
     mapViewContainerID: config.DOM_ID.mapViewContainer
+        onScaleChange:(newScale=0)=>{
+            // console.log('newScale', newScale);
+            view.legend.render(newScale);
+        }
   });
 
   const controller = new Controller({
@@ -39,7 +44,7 @@ const initApp = async oauthManager => {
       view.speciesSelector.render({ data });
     },
     legendDataOnReady: data => {
-      view.initLegend(data);
+            view.legend.init({data});
     },
     feedbackManagerOnOpen: data => {
       view.toggleControlPanel({
@@ -224,6 +229,17 @@ const initApp = async oauthManager => {
       controller.setSelectedHucFeature(hucFeature);
     }
   });
+
+    const csvLoader = new CsvLoader({
+        targetDomElementId: config.DOM_ID.mapViewContainer,
+        onLoadHandler: (csvData)=>{
+            if(csvData.features && csvData.features.length){
+                // console.log('csv data deatures', csvData.features);
+                mapControl.addCsvLayer(csvData.features);
+            }
+        }
+    });
+    csvLoader.init();
 
   // window.appDebugger = {
   //     signOut: oauthManager.signOut

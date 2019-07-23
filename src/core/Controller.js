@@ -8,6 +8,9 @@ import OAuthManager from "./OauthManager";
 import ApiManager from "./ApiManager";
 
 export default function Controller(props = {}) {
+  const feedbackFailMessage =
+    "Comments failed to sync.\n\nPlease contact pete_cutter@natureserve.org to report the problem.\n\nTo troubleshoot: Copy your comments, then try logging out of ArcGIS Online, reopening in a new browser window, logging back in, and trying again.";
+
   // const oauthManager = new OAuthManager(config.oauthAppID);
   const oauthManager = props.oauthManager;
   const dataModel = new DataModel();
@@ -328,8 +331,13 @@ export default function Controller(props = {}) {
         ] = dataLoadDate;
       }
 
-      apiManager.applyEditToFeatureTable(requestUrl, feature).then(res => {
+      apiManager
+        .applyEditToFeatureTable(requestUrl, feature)
+        .then(res => {
         console.log("post edit to OverallFeedback table", res);
+        })
+        .catch(err => {
+          alert(`${feedbackFailMessage}`);
       });
 
       controllerProps.onOverallFeedbackSubmit(feature);
@@ -448,6 +456,9 @@ export default function Controller(props = {}) {
         .applyEditToFeatureTable(requestUrl, feedbackFeature)
         .then(res => {
           console.log("post edit to Feedback table", res);
+        })
+        .catch(err => {
+          alert(`${feedbackFailMessage}`);
         });
     } catch (err) {
       console.error(err);
@@ -715,7 +726,8 @@ export default function Controller(props = {}) {
     });
 
     data.unshift({
-      label: "Predicted Habitat"
+      label: "Predicted Habitat",
+      minVisibleScale: config.visibleRange.predictedHabitat.minScale
       // color: config.COLOR.actualModeledExtent
     });
 

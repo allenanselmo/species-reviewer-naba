@@ -11,9 +11,13 @@ const esriLoaderOptions = {
   url: "https://js.arcgis.com/4.10"
 };
 
-const MapControl = function(options = {}) {
-  const webMapID = options.webMapID || null;
-  const mapViewContainerID = options.mapViewContainerID || null;
+const MapControl = function({
+  webMapID = '',
+  mapViewContainerID = '',
+  onScaleChange = null
+}={}) {
+  // const webMapID = options.webMapID || null;
+  // const mapViewContainerID = options.mapViewContainerID || null;
 
   let mapView = null;
   let hucsLayer = null;
@@ -236,6 +240,13 @@ const MapControl = function(options = {}) {
           console.log(err);
         });
     });
+
+    // // when the map view is stationary , call onZoomChange handler to get the legend updated based on the default zoom level
+    mapView.watch('stationary', evt=>{
+      if(onScaleChange){
+        onScaleChange(mapView.scale);
+      }
+    })
   };
 
   const initBasemapGallery = view => {
@@ -641,6 +652,47 @@ const MapControl = function(options = {}) {
     });
   };
 
+  const addCsvLayer = (features=[])=>{
+
+    const layerId = 'csvLayer';
+
+    let csvLayer = mapView.map.findLayerById(layerId);
+
+    if(csvLayer){
+      mapView.map.remove(csvLayer);
+    }
+
+    esriLoader
+      .loadModules(["esri/layers/GraphicsLayer", "esri/Graphic"], esriLoaderOptions)
+      .then(([GraphicsLayer,Graphic]) => {
+
+        const fireflySymbl = {
+          type: "picture-marker",  // autocasts as new PictureMarkerSymbol()
+          url: config.fireflyStyle.blue,
+          width: "32px",
+          height: "32px"
+        };
+
+        const graphics = features.map((feature, idx)=>{
+          feature.attributes.FID = idx;
+          feature.symbol = fireflySymbl;
+          return new Graphic(feature);
+        });
+
+        csvLayer = new GraphicsLayer({
+          id: layerId,
+          graphics,
+          title: 'CSV Layer',
+          opacity: 0.85
+        });
+
+        mapView.map.add(csvLayer);
+
+      }).catch(err=>{
+        console.error(err);
+      })
+  };
+
   return {
     init,
     highlightHucs,
@@ -656,7 +708,8 @@ const MapControl = function(options = {}) {
     setLayersOpacity,
     clearMapGraphics,
     addPreviewHucByID,
-    showPredictedHabitatLayers
+    showPredictedHabitatLayers,
+    addCsvLayer
   };
 };
 

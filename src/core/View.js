@@ -6,6 +6,7 @@ import OverallFeedbackControlPanel from "../components/OverallFeedbackControl";
 import ListViewForOverallFeedback from "../components/ListViewForOverallFeedback";
 import ListViewForDetailedFeedback from "../components/ListViewForDetailedFeedback";
 import ListViewForFeedbacksByHucs from "../components/ListViewForFeedbacksByHucs";
+import Legend from '../components/Legend';
 
 export default function View() {
   let viewProps = null;
@@ -32,6 +33,10 @@ export default function View() {
   const listViewForFeedbacksByHuc = new ListViewForFeedbacksByHucs({
     containerID: config.DOM_ID.listViewForFeedbacksByHuc
   });
+
+    const legend = new Legend({
+        container: config.DOM_ID.legend
+    });
 
   const $mainControlPanel = document.getElementById(config.DOM_ID.mainControl);
 
@@ -271,7 +276,7 @@ export default function View() {
 
   return {
     init,
-    initLegend,
+        legend,
     speciesSelector,
     feedbackControlPanel,
     toggleMainControl,
