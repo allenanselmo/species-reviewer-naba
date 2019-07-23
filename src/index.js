@@ -9,7 +9,7 @@ import MapControl from "./core/MapControl";
 import OAuthManager from "./core/OauthManager";
 import CsvLoader from "./core/CsvLoader";
 
-import PolyfillForIE from './utils/PolyfillForIE';
+import PolyfillForIE from "./utils/PolyfillForIE";
 
 (async function initOAuthManager() {
   const oauthManager = new OAuthManager(config.oauthAppID);
@@ -32,9 +32,9 @@ const initApp = async oauthManager => {
   const mapControl = new MapControl({
     webMapID: config.webMapID,
     mapViewContainerID: config.DOM_ID.mapViewContainer,
-    onScaleChange:(newScale=0)=>{
-        // console.log('newScale', newScale);
-        view.legend.render(newScale);
+    onScaleChange: (newScale = 0) => {
+      // console.log('newScale', newScale);
+      view.legend.render(newScale);
     }
   });
 
@@ -46,7 +46,7 @@ const initApp = async oauthManager => {
       view.speciesSelector.render({ data });
     },
     legendDataOnReady: data => {
-            view.legend.init({data});
+      view.legend.init({ data });
     },
     feedbackManagerOnOpen: data => {
       view.toggleControlPanel({
@@ -233,16 +233,16 @@ const initApp = async oauthManager => {
     }
   });
 
-    const csvLoader = new CsvLoader({
-        targetDomElementId: config.DOM_ID.mapViewContainer,
+  const csvLoader = new CsvLoader({
+    targetDomElementId: config.DOM_ID.mapViewContainer,
     onLoadHandler: csvData => {
-            if(csvData.features && csvData.features.length){
-                // console.log('csv data deatures', csvData.features);
-                mapControl.addCsvLayer(csvData.features);
-            }
-        }
-    });
-    csvLoader.init();
+      if (csvData.features && csvData.features.length) {
+        // console.log('csv data deatures', csvData.features);
+        mapControl.addCsvLayer(csvData.features);
+      }
+    }
+  });
+  csvLoader.init();
 
   // window.appDebugger = {
   //     signOut: oauthManager.signOut
