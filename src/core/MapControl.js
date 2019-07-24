@@ -557,12 +557,12 @@ const MapControl = function({
   };
 
   const clearAllGraphics = () => {
-    hucsByStatusGraphicLayer.removeAll();
+    if (hucsByStatusGraphicLayer) hucsByStatusGraphicLayer.removeAll();
     cleanPreviewHucGraphic();
   };
 
   const cleanPreviewHucGraphic = () => {
-    hucPreviewGraphicLayer.removeAll();
+    if (hucPreviewGraphicLayer) hucPreviewGraphicLayer.removeAll();
   };
 
   // highlight hucs from the species extent table
