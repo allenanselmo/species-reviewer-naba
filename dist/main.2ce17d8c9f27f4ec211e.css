@@ -193,6 +193,9 @@ body {
 #speciesSelectorDiv .has-detailed-feedback {
   font-style: italic; }
 
+#speciesSelectorDiv .has-no-data-loaded {
+  background-color: #ddd; }
+
 #speciesSelectorDiv .species-option {
   color: #323232; }
 

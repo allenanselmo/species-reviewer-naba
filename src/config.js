@@ -93,7 +93,9 @@ module.exports = {
     // pdfLookup:
     //   "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/PDF_Lookup/FeatureServer/0",
     WatershedBoundaryDataset_HUC8:
-      "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/WatershedBoundaryDataset_HUC8/FeatureServer/0",
+      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_HUC8_WBD/FeatureServer/0",
+    //Living atlas
+    //"https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/WatershedBoundaryDataset_HUC8/FeatureServer/0",
     //"https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_HUC8/FeatureServer/0",
     //"https://hydro.nationalmap.gov/arcgis/rest/services/wbd/MapServer/4",
     data_load_date:
@@ -102,7 +104,7 @@ module.exports = {
 
   layerParameters: {
     WatershedBoundaryDataset_HUC8: {
-      minScale: 2311165,
+      minScale: 0,
       maxScale: 0
     },
     data_load_date: {
@@ -153,5 +155,7 @@ module.exports = {
     predictedHabitat: {
       minScale: 1025000
     }
-  }
+  },
+
+  allowCommentOnNoDataSpecies: true
 };

@@ -1,51 +1,58 @@
-import './style.scss';
+import "./style.scss";
 
-import config from '../../config';
+import config from "../../config";
 
-export default function SpeciesSelector(props={
-    containerID: ''
-}){
+export default function SpeciesSelector(
+  props = {
+    containerID: ""
+  }
+) {
+  const container = props.containerID
+    ? document.getElementById(props.containerID)
+    : null;
 
-    const container = props.containerID ? document.getElementById(props.containerID) : null;
+  let onChangeHandler = null;
+  let data = null;
+  let selectedTaxa = null;
 
-    let onChangeHandler = null;
-    let data = null;
-    let selectedTaxa = null;
+  const init = (options = {}) => {
+    onChangeHandler = options.onChange || null;
 
-    const init = (options={})=>{
+    render();
 
-        onChangeHandler = options.onChange || null;
+    initEventHandler();
+  };
 
-        render();
+  const getHtmlForTaxaSelector = () => {
+    const distinctTaxa = [];
 
-        initEventHandler();
-    };
+    data.forEach(d => {
+      const value = d[config.FIELD_NAME.speciesLookup.taxa];
 
-    const getHtmlForTaxaSelector = ()=>{
+      if (distinctTaxa.indexOf(value) === -1) {
+        distinctTaxa.push(value);
+      }
+    });
 
-        const distinctTaxa = [];
+    distinctTaxa.sort((a, b) => {
+      if (a < b) {
+        return -1;
+      }
+      if (a > b) {
+        return 1;
+      }
+      return 0;
+    });
 
-        data.forEach(d=>{
-            const value = d[config.FIELD_NAME.speciesLookup.taxa];
+    // console.log(distinctTaxa);
 
-            if(distinctTaxa.indexOf(value) === -1){
-                distinctTaxa.push(value);
-            }
-        });
+    const optionsHtml = distinctTaxa
+      .map(d => {
+        return `<option class='select-option' value="${d}">${d}</option>`;
+      })
+      .join("");
 
-        distinctTaxa.sort((a,b)=>{
-            if(a < b) { return -1; }
-            if(a > b) { return 1; }
-            return 0;
-        });
-
-        // console.log(distinctTaxa);
-
-        const optionsHtml = distinctTaxa.map(d=>{
-            return `<option class='select-option' value="${d}">${d}</option>`
-        }).join('');
-
-        const taxaSelectorHtml = `
+    const taxaSelectorHtml = `
             <label class='trailer-half'>
                 <select id='taxaSelector' class="select-full">
                     <option value="" selected disabled hidden>Select Taxa</option>
@@ -53,65 +60,94 @@ export default function SpeciesSelector(props={
                 </select>
             </label>
         `;
-        
-        return taxaSelectorHtml;
-    };
 
-    const getHtmlForSpeciesSelector = ()=>{
+    return taxaSelectorHtml;
+  };
 
-        const dataForSelectedTaxa = data.filter(d=>{return d[config.FIELD_NAME.speciesLookup.taxa] === selectedTaxa});
+  const getHtmlForSpeciesSelector = () => {
+    const dataForSelectedTaxa = data.filter(d => {
+      return d[config.FIELD_NAME.speciesLookup.taxa] === selectedTaxa;
+    });
 
-        dataForSelectedTaxa.sort((a,b)=>{
-            if(a[config.FIELD_NAME.speciesLookup.speciesName] < b[config.FIELD_NAME.speciesLookup.speciesName]) { return -1; }
-            if(a[config.FIELD_NAME.speciesLookup.speciesName] > b[config.FIELD_NAME.speciesLookup.speciesName]) { return 1; }
-            return 0;
-        });
+    dataForSelectedTaxa.sort((a, b) => {
+      if (
+        a[config.FIELD_NAME.speciesLookup.speciesName] <
+        b[config.FIELD_NAME.speciesLookup.speciesName]
+      ) {
+        return -1;
+      }
+      if (
+        a[config.FIELD_NAME.speciesLookup.speciesName] >
+        b[config.FIELD_NAME.speciesLookup.speciesName]
+      ) {
+        return 1;
+      }
+      return 0;
+    });
 
-        const optionsHtml = dataForSelectedTaxa.map(d=>{
-                const val = d[config.FIELD_NAME.speciesLookup.speciesCode];
-                const label = d[config.FIELD_NAME.speciesLookup.speciesName];
-                const hasOverallFeedback = d.hasOverallFeedback ? getOptionDecorationClass('overall') : '';
-                const hasDeatiledFeedback = d.hasDeatiledFeedback ? getOptionDecorationClass('detailed') : '';
-                // if no data has been loaded for this species, disable the option
-                const isDisabled = !d.hasDataLoaded ? 'disabled' : '';
-                return `<option class='select-option species-option ${hasOverallFeedback} ${hasDeatiledFeedback} ${isDisabled}' value="${val}" ${isDisabled}>${label}</option>`
-            }).join('');
+    const optionsHtml = dataForSelectedTaxa
+      .map(d => {
+        const val = d[config.FIELD_NAME.speciesLookup.speciesCode];
+        const label = d[config.FIELD_NAME.speciesLookup.speciesName];
+        const hasOverallFeedback = d.hasOverallFeedback
+          ? getOptionDecorationClass("overall")
+          : "";
+        const hasDeatiledFeedback = d.hasDeatiledFeedback
+          ? getOptionDecorationClass("detailed")
+          : "";
+        // if no data has been loaded for this species, disable the option if not allowing commenting on these
+        const isDisabled =
+          !config.allowCommentOnNoDataSpecies && !d.hasDataLoaded
+            ? "disabled"
+            : "";
 
-        const speciesSelectorHtml = `
+        // If no data and allowing commenting, have changed background style for these items
+        const isNoDataLoaded =
+          config.allowCommentOnNoDataSpecies && !d.hasDataLoaded
+            ? getOptionDecorationClass("noDataLoaded")
+            : "";
+        return `<option class='select-option species-option ${hasOverallFeedback} ${hasDeatiledFeedback} ${isDisabled} ${isNoDataLoaded}' value="${val}" ${isDisabled}>${label}</option>`;
+      })
+      .join("");
+
+    const speciesSelectorHtml = `
             <label class='trailer-half'>
-                <select id='speciesSelector' class="select-full" ${ optionsHtml === '' ? 'disabled' : '' }>
+                <select id='speciesSelector' class="select-full" ${
+                  optionsHtml === "" ? "disabled" : ""
+                }>
                     <option value="" selected disabled hidden>Select Species</option>
                     ${optionsHtml}
                 </select>
             </label>
         `;
-        
-        return speciesSelectorHtml;
-    };
 
-    const render = (options={
-        data: []
-    })=>{
+    return speciesSelectorHtml;
+  };
 
-        data = options.data || data;
+  const render = (
+    options = {
+      data: []
+    }
+  ) => {
+    data = options.data || data;
 
-        // console.log(data);
+    // console.log(data);
 
-        // const options = data.map(d=>{
-        //     const val = d.SpeciesCode;
-        //     const label = d.SpeciesName;
-        //     return `<option class='select-option' value="${val}">${label}</option>`
-        // }).join('');
+    // const options = data.map(d=>{
+    //     const val = d.SpeciesCode;
+    //     const label = d.SpeciesName;
+    //     return `<option class='select-option' value="${val}">${label}</option>`
+    // }).join('');
 
-        // const taxaSelectorHtml = `
-        //     <label>
-        //         <select class="select-full">
-        //             <option value="" selected disabled hidden>Select Taxa</option>
-        //         </select>
-        //     </label>
-        // `;
+    // const taxaSelectorHtml = `
+    //     <label>
+    //         <select class="select-full">
+    //             <option value="" selected disabled hidden>Select Taxa</option>
+    //         </select>
+    //     </label>
+    // `;
 
-        const compoenetHtml = `
+    const compoenetHtml = `
             <div id='taxaSelectorDiv'>
                 ${getHtmlForTaxaSelector()}
             </div>
@@ -120,93 +156,94 @@ export default function SpeciesSelector(props={
             </div>
         `;
 
-        container.innerHTML = compoenetHtml;
+    container.innerHTML = compoenetHtml;
+  };
 
+  const updateSpeciesSelector = () => {
+    // console.log(getHtmlForSpeciesSelector());
+    document.getElementById(
+      "speciesSelectorDiv"
+    ).innerHTML = getHtmlForSpeciesSelector();
+  };
+
+  const initEventHandler = (options = {}) => {
+    // const changeEventHandler = (event)=>{
+    //     if(event.target.value && onChangeHandler){
+    //         onChangeHandler(event.target.value);
+    //     }
+    // };
+
+    // const taxaSelectorOnChange = (event)=>{
+    //     console.log(event.target.value);
+    // };
+
+    // container.querySelector('#speciesSelector').onchange = changeEventHandler;
+
+    // container.querySelector('#taxaSelector').onchange = taxaSelectorOnChange;
+
+    container.addEventListener("change", evt => {
+      const actionsByElementID = {
+        taxaSelector: () => {
+          // console.log('taxtSelector on change', event.target.value);
+          selectedTaxa = evt.target.value;
+          updateSpeciesSelector();
+        },
+        speciesSelector: () => {
+          // console.log('speciesSelector on change', event.target.value);
+          onChangeHandler(evt.target.value);
+        }
+      };
+
+      if (actionsByElementID[evt.target.id]) {
+        actionsByElementID[evt.target.id]();
+      }
+    });
+  };
+
+  // feedback type values: 'overall' | 'detailed'. Need to use it to determine which class to add (is-bold | is-italic)
+  const setSpeciesSelectorOptionAsReviewed = (
+    speciesCode = "",
+    feedbackType = ""
+  ) => {
+    const selectOption = document.querySelector(
+      `.select-option[value='${speciesCode}']`
+    );
+
+    const decorationClass = getOptionDecorationClass(feedbackType);
+
+    selectOption.classList.add(decorationClass);
+
+    // console.log(speciesCode);
+
+    data.forEach(d => {
+      if (d[config.FIELD_NAME.speciesLookup.speciesCode] === speciesCode) {
+        if (feedbackType === "detailed") {
+          d.hasDeatiledFeedback = true;
+        }
+
+        if (feedbackType === "overall") {
+          d.hasOverallFeedback = true;
+        }
+      }
+    });
+  };
+
+  // feedback type values: 'overall' | 'detailed'
+  // for species has overall feedback provided, style it as bold text
+  // for species has detailed feedback provided, style it as italic text
+  const getOptionDecorationClass = (feedbackType = "") => {
+    const decorationClasses = {
+      overall: "has-overall-feedback",
+      detailed: "has-detailed-feedback",
+      noDataLoaded: "has-no-data-loaded"
     };
 
-    const updateSpeciesSelector = ()=>{
-        // console.log(getHtmlForSpeciesSelector());
-        document.getElementById('speciesSelectorDiv').innerHTML = getHtmlForSpeciesSelector();
-    }
+    return decorationClasses[feedbackType] || "undefined-class";
+  };
 
-    const initEventHandler = (options={})=>{
-
-        // const changeEventHandler = (event)=>{
-        //     if(event.target.value && onChangeHandler){
-        //         onChangeHandler(event.target.value);
-        //     }
-        // };
-
-        // const taxaSelectorOnChange = (event)=>{
-        //     console.log(event.target.value);
-        // };
-
-        // container.querySelector('#speciesSelector').onchange = changeEventHandler;
-
-        // container.querySelector('#taxaSelector').onchange = taxaSelectorOnChange;
-
-        container.addEventListener('change', (evt)=>{
-
-            const actionsByElementID = {
-                'taxaSelector': ()=>{
-                    // console.log('taxtSelector on change', event.target.value);
-                    selectedTaxa = evt.target.value;
-                    updateSpeciesSelector();
-                },
-                'speciesSelector': ()=>{
-                    // console.log('speciesSelector on change', event.target.value);
-                    onChangeHandler(evt.target.value);
-                }
-            };
-
-            if(actionsByElementID[evt.target.id]){
-                actionsByElementID[evt.target.id]();
-            }
-        })
-    };
-
-    // feedback type values: 'overall' | 'detailed'. Need to use it to determine which class to add (is-bold | is-italic)
-    const setSpeciesSelectorOptionAsReviewed = (speciesCode='', feedbackType='')=>{
-        const selectOption = document.querySelector(`.select-option[value='${speciesCode}']`);
-
-        const decorationClass = getOptionDecorationClass(feedbackType);
-
-        selectOption.classList.add(decorationClass);
-
-        // console.log(speciesCode);
-
-        data.forEach(d=>{
-            if(d[config.FIELD_NAME.speciesLookup.speciesCode] === speciesCode){
-
-                if(feedbackType === 'detailed'){
-                    d.hasDeatiledFeedback = true;
-                }
-
-                if(feedbackType === 'overall'){
-                    d.hasOverallFeedback = true;
-                }
-                
-            }
-        });
-    };
-
-    // feedback type values: 'overall' | 'detailed'
-    // for species has overall feedback provided, style it as bold text
-    // for species has detailed feedback provided, style it as italic text
-    const getOptionDecorationClass = (feedbackType='')=>{
-
-        const decorationClasses = {
-            'overall': 'has-overall-feedback',
-            'detailed': 'has-detailed-feedback'
-        };
-
-        return decorationClasses[feedbackType] || 'undefined-class';
-    }
-
-    return {
-        init,
-        render,
-        setSpeciesSelectorOptionAsReviewed
-    };
-
+  return {
+    init,
+    render,
+    setSpeciesSelectorOptionAsReviewed
+  };
 }
