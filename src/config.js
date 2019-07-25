@@ -6,21 +6,19 @@ module.exports = {
   webMapID: "6c4e0d073ff94d4cb979e29128a43eb7",
 
   FIELD_NAME: {
-    // hucLayerHucID: "HUC8",
-    // hucLayerHucName: "HUC8",
-    hucLayerHucID: "HUC_8",
-    hucLayerHucName: "HUC_8",
+    hucLayerHucID: "HUC8",
+    hucLayerHucName: "HUC8",
     statusType: "StatusType",
     speciesLookup: {
-      speciesCode: "ELEMENT_GL",
-      speciesName: "SCIENTIFIC",
-      taxa: "TAXONOMIC_",
+      speciesCode: "EGT_ID",
+      speciesName: "G_NAME",
+      taxa: "TAXGROUP",
       boundaryLayerLink: "BoundaryLayerLink",
       pdfLink: "PdfLink"
     },
     speciesDistribution: {
-      speciesCode: "EGTID",
-      hucID: "LOCATION"
+      speciesCode: "EGT_ID",
+      hucID: "HUC8_WBD"
     },
     feedbackTable: {
       hucID: "HUCID",
@@ -69,7 +67,7 @@ module.exports = {
 
   URL: {
     speciesLookupTable:
-      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_Species_Master_List/FeatureServer/0",
+      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_Species_Master_Lookup/FeatureServer/0",
 
     speciesDistribution:
       "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_Species_Modeling_Extent/FeatureServer/0",
@@ -95,7 +93,8 @@ module.exports = {
     // pdfLookup:
     //   "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/PDF_Lookup/FeatureServer/0",
     WatershedBoundaryDataset_HUC8:
-      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_HUC8/FeatureServer/0",
+      "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/WatershedBoundaryDataset_HUC8/FeatureServer/0",
+    //"https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_HUC8/FeatureServer/0",
     //"https://hydro.nationalmap.gov/arcgis/rest/services/wbd/MapServer/4",
     data_load_date:
       "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_Data_Load_Date/FeatureServer/0"

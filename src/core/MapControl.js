@@ -504,8 +504,7 @@ const MapControl = function({
       if (
         g &&
         g.attributes &&
-        Number.parseInt(g.attributes[config.FIELD_NAME.hucLayerHucID]) ===
-          Number.parseInt(hucID)
+        g.attributes[config.FIELD_NAME.hucLayerHucID] === hucID
       ) {
         hucsByStatusGraphicLayer.remove(g);
       }
@@ -595,7 +594,7 @@ const MapControl = function({
 
     const uniqueValueInfos = hucIds.map(hucId => {
       return {
-        value: Number.parseInt(hucId),
+        value: hucId,
         symbol: symbol
       };
     });

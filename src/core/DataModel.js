@@ -84,10 +84,7 @@ export default class DataModel {
 
     if (hucs) {
       return hucs.filter(d => {
-        return (
-          Number.parseInt(d[config.FIELD_NAME.speciesDistribution.hucID]) ===
-          Number.parseInt(hucID)
-        );
+        return d[config.FIELD_NAME.speciesDistribution.hucID] === hucID;
       }).length
         ? true
         : false;
