@@ -1,8 +1,7 @@
 "use strict";
 
 module.exports = {
-  oauthAppID: "SIyPGsLE8ehbj4JU", //Test
-  //oauthAppID: "6SfJ02ynq5pvFxPz", // Production
+  oauthAppID: "6SfJ02ynq5pvFxPz",
   webMapID: "6c4e0d073ff94d4cb979e29128a43eb7",
 
   FIELD_NAME: {
