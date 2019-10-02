@@ -103,6 +103,7 @@ export default function ApiManager(props = {}) {
     const whereClause = options.where || "1=1";
     const outFields = options.outFields || "*";
     const returnDistinctValues = options.returnDistinctValues || false;
+    const orderByFields = options.returnDistinctValues ? outFields : null;
 
     return queryForFeaturesGet(
       requestUrl,
@@ -110,6 +111,7 @@ export default function ApiManager(props = {}) {
         where: whereClause,
         outFields,
         returnDistinctValues,
+        orderByFields,
         f: "json",
         token: props.oauthManager.getToken()
       },
