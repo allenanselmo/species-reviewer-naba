@@ -10,9 +10,7 @@ export default function ApiManager(props = {}) {
     }
   ) => {
     const requestUrl = config.URL.speciesByUser + "/query";
-    const whereClause = `${config.FIELD_NAME.speciesByUser.email} = '${
-      options.email
-    }'`;
+    const whereClause = `${config.FIELD_NAME.speciesByUser.email} = '${options.email}'`;
 
     return queryForFeaturesGet(requestUrl, {
       where: whereClause,
@@ -82,9 +80,7 @@ export default function ApiManager(props = {}) {
     // const requestUrl = config.URL.speciesExtent[speciesKey] ? config.URL.speciesExtent[speciesKey] + '/query' : null;
 
     const requestUrl = config.URL.speciesDistribution + "/query";
-    const whereClause = `${
-      config.FIELD_NAME.speciesDistribution.speciesCode
-    } = '${speciesKey}'`;
+    const whereClause = `${config.FIELD_NAME.speciesDistribution.speciesCode} = ${speciesKey}`;
 
     if (requestUrl) {
       return queryForFeaturesGet(
@@ -170,9 +166,7 @@ export default function ApiManager(props = {}) {
 
   const queryPdfTable = (speciesKey = "") => {
     const requestUrl = config.URL.pdfLookup + "/query";
-    const whereClause = `${
-      config.FIELD_NAME.pdfLookup.speciesCode
-    } = '${speciesKey}'`;
+    const whereClause = `${config.FIELD_NAME.pdfLookup.speciesCode} = '${speciesKey}'`;
 
     if (requestUrl) {
       return queryForFeaturesGet(
@@ -218,9 +212,7 @@ export default function ApiManager(props = {}) {
     const fieldNameDataLoadDate =
       config.FIELD_NAME.data_load_date.data_load_date;
     const requestUrl = config.URL.data_load_date + "/query";
-    const where = `${
-      config.FIELD_NAME.data_load_date.species_code
-    } = '${speciesCode}'`;
+    const where = `${config.FIELD_NAME.data_load_date.species_code} = '${speciesCode}'`;
 
     return new Promise(async (resolve, reject) => {
       const queryResult = await queryForFeaturesGet(requestUrl, {
@@ -251,8 +243,7 @@ export default function ApiManager(props = {}) {
       const getFeatures = resultOffset => {
         if (resultOffset) {
           params.resultOffset = resultOffset;
-        }
-        else {
+        } else {
           resultOffset = 0;
         }
 
@@ -310,8 +301,7 @@ export default function ApiManager(props = {}) {
       const getFeatures = resultOffset => {
         if (resultOffset) {
           bodyFormData.append("resultOffset", resultOffset);
-        }
-        else {
+        } else {
           resultOffset = 0;
         }
 

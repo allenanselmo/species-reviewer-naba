@@ -224,13 +224,29 @@ export default function Controller(props = {}) {
       });
 
       const formattedFeedbackData = feedbacks.map(d => {
-        return {
+        let retObj = {
           userID: d.attributes[config.FIELD_NAME.feedbackTable.userID],
           hucID: d.attributes[config.FIELD_NAME.feedbackTable.hucID],
           species: d.attributes[config.FIELD_NAME.feedbackTable.species],
           status: d.attributes[config.FIELD_NAME.feedbackTable.status],
           comment: d.attributes[config.FIELD_NAME.feedbackTable.comment]
         };
+
+        // If additional fields, then we need to set them for the feedbackDatastore
+        if (
+          config.FIELD_NAME.feedbackTable.additionalFields &&
+          config.FIELD_NAME.feedbackTable.additionalFields.length > 0
+        ) {
+          retObj.additionalFields = {};
+          config.FIELD_NAME.feedbackTable.additionalFields.forEach(addField => {
+            if (addField.editable) {
+              retObj.additionalFields[addField.field] =
+                d.attributes[addField.field];
+            }
+          });
+        }
+
+        return retObj;
       });
 
       if (onSuccessHandler) {
@@ -251,9 +267,7 @@ export default function Controller(props = {}) {
     try {
       const feedbacks = await apiManager.fetchFeedback({
         requestUrl: config.URL.overallFeedback + "/query",
-        where: `${config.FIELD_NAME.overallFeedback.userID} = '${userID}' AND ${
-          config.FIELD_NAME.overallFeedback.retirementDate
-        } IS NULL`
+        where: `${config.FIELD_NAME.overallFeedback.userID} = '${userID}' AND ${config.FIELD_NAME.overallFeedback.retirementDate} IS NULL`
       });
 
       saveOverallFeedbackToDataModel(feedbacks);
@@ -271,11 +285,7 @@ export default function Controller(props = {}) {
     try {
       const feedbacks = await apiManager.fetchFeedback({
         requestUrl: config.URL.overallFeedback + "/query",
-        where: `${
-          config.FIELD_NAME.overallFeedback.species
-        } = '${species}' AND ${
-          config.FIELD_NAME.overallFeedback.retirementDate
-        } is NULL`
+        where: `${config.FIELD_NAME.overallFeedback.species} = '${species}' AND ${config.FIELD_NAME.overallFeedback.retirementDate} is NULL`
       });
 
       controllerProps.overallFeedbackForReviewModeOnReady(feedbacks);
@@ -311,9 +321,7 @@ export default function Controller(props = {}) {
 
       const feedbacks = await apiManager.fetchFeedback({
         requestUrl: config.URL.overallFeedback + "/query",
-        where: `${config.FIELD_NAME.overallFeedback.userID} = '${userID}' AND ${
-          config.FIELD_NAME.overallFeedback.species
-        } = '${species}' AND ${config.FIELD_NAME.overallFeedback.retirementDate} is null`
+        where: `${config.FIELD_NAME.overallFeedback.userID} = '${userID}' AND ${config.FIELD_NAME.overallFeedback.species} = '${species}' AND ${config.FIELD_NAME.overallFeedback.retirementDate} is null`
       });
 
       const requestUrl = feedbacks[0]
@@ -334,11 +342,11 @@ export default function Controller(props = {}) {
       apiManager
         .applyEditToFeatureTable(requestUrl, feature)
         .then(res => {
-        console.log("post edit to OverallFeedback table", res);
+          console.log("post edit to OverallFeedback table", res);
         })
         .catch(err => {
           alert(`${feedbackFailMessage}`);
-      });
+        });
 
       controllerProps.onOverallFeedbackSubmit(feature);
     } catch (err) {
@@ -392,11 +400,7 @@ export default function Controller(props = {}) {
     try {
       const feedbacks = await apiManager.fetchFeedback({
         requestUrl: config.URL.feedbackTable + "/query",
-        where: `${config.FIELD_NAME.feedbackTable.userID} = '${
-          data.userID
-        }' AND ${config.FIELD_NAME.feedbackTable.species} = '${
-          data.species
-        }' AND ${config.FIELD_NAME.feedbackTable.hucID} = '${data.hucID}'`
+        where: `${config.FIELD_NAME.feedbackTable.userID} = '${data.userID}' AND ${config.FIELD_NAME.feedbackTable.species} = '${data.species}' AND ${config.FIELD_NAME.feedbackTable.hucID} = '${data.hucID}'`
       });
 
       if (feedbacks[0]) {
@@ -420,7 +424,7 @@ export default function Controller(props = {}) {
       const dataLoadDate = await apiManager.getDataLoadDate(data.species);
       // console.log(dataLoadDate);
 
-      const feedbackFeature = {
+      let feedbackFeature = {
         attributes: {
           [config.FIELD_NAME.feedbackTable.userID]: data.userID,
           [config.FIELD_NAME.feedbackTable.hucID]: data.hucID,
@@ -430,13 +434,27 @@ export default function Controller(props = {}) {
         }
       };
 
+      // If additional fields, then we need to set them
+      if (
+        config.FIELD_NAME.feedbackTable.additionalFields &&
+        config.FIELD_NAME.feedbackTable.additionalFields.length > 0
+      ) {
+        config.FIELD_NAME.feedbackTable.additionalFields.forEach(addField => {
+          if (
+            data.additionalFields[addField.field] !== null &&
+            data.additionalFields[addField.field] !== "null"
+          ) {
+            if (addField.editable) {
+              feedbackFeature.attributes[addField.field] =
+                data.additionalFields[addField.field];
+            }
+          }
+        });
+      }
+
       const feedbacks = await apiManager.fetchFeedback({
         requestUrl: config.URL.feedbackTable + "/query",
-        where: `${config.FIELD_NAME.feedbackTable.userID} = '${
-          data.userID
-        }' AND ${config.FIELD_NAME.feedbackTable.species} = '${
-          data.species
-        }' AND ${config.FIELD_NAME.feedbackTable.hucID} = '${data.hucID}'`
+        where: `${config.FIELD_NAME.feedbackTable.userID} = '${data.userID}' AND ${config.FIELD_NAME.feedbackTable.species} = '${data.species}' AND ${config.FIELD_NAME.feedbackTable.hucID} = '${data.hucID}'`
       });
 
       const requestUrl = feedbacks[0]
@@ -477,9 +495,7 @@ export default function Controller(props = {}) {
         const feedbacks = await apiManager.fetchFeedback({
           requestUrl: config.URL.feedbackTable + "/query",
           where: `${config.FIELD_NAME.feedbackTable.species} = '${species}'`,
-          outFields: `${config.FIELD_NAME.feedbackTable.hucID}, ${
-            config.FIELD_NAME.feedbackTable.status
-          }`,
+          outFields: `${config.FIELD_NAME.feedbackTable.hucID}, ${config.FIELD_NAME.feedbackTable.status}`,
           returnDistinctValues: true
         });
 
@@ -589,6 +605,26 @@ export default function Controller(props = {}) {
       state.selectedHucFeature.attributes[config.FIELD_NAME.hucLayerHucName];
     const isHucInModeledRange = dataModel.isHucInModeledRange(hucID, species);
 
+    // Adding addditional fields to feedback table for view/edit, pulling initial values from hucs by species extent table
+    let additionalFields = {};
+    if (
+      config.FIELD_NAME.feedbackTable.additionalFields &&
+      config.FIELD_NAME.feedbackTable.additionalFields.length > 0
+    ) {
+      const hucsBySpeciesData = dataModel.getHucsBySpecies(species);
+      const hucForSpeciesData = hucsBySpeciesData.filter(
+        hucData =>
+          hucData[config.FIELD_NAME.speciesDistribution.hucID] === hucID
+      );
+      if (hucForSpeciesData && hucForSpeciesData.length > 0) {
+        config.FIELD_NAME.feedbackTable.additionalFields.forEach(addField => {
+          // Pull from huc either by special hucField in the feedback additional fields, or by the same field name as in the feedback table
+          additionalFields[addField.field] =
+            hucForSpeciesData[0][addField.hucField || addField.field];
+        });
+      }
+    }
+
     // console.log('isHucInModeledRange', isHucInModeledRange);
 
     if (userID && species && hucID) {
@@ -597,7 +633,8 @@ export default function Controller(props = {}) {
         species,
         hucID,
         hucName,
-        isHucInModeledRange
+        isHucInModeledRange,
+        additionalFields
       });
     } else {
       console.error(

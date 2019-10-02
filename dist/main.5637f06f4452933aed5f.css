@@ -208,18 +208,25 @@ body {
   background: rgba(0, 0, 0, 0.05);
   color: rgba(100, 100, 100, 0.5); }
 
-#feedbackControlPanelContainer .fieldset-radio label {
-  color: #fff;
-  font-size: .8rem; }
-
-#feedbackControlPanelContainer hr {
-  margin: .5rem 0 .75rem; }
-
-#feedbackControlPanelContainer .close-btn {
-  position: absolute;
-  top: .3rem;
-  right: 0;
-  cursor: pointer; }
+#feedbackControlDiv {
+  height: 90%; }
+  #feedbackControlDiv #feedbackControlPanelContainer {
+    height: 100%; }
+    #feedbackControlDiv #feedbackControlPanelContainer .feedbackControlPanelData {
+      height: 87%;
+      overflow: auto;
+      padding-right: 0.5em;
+      margin-bottom: 0.5em; }
+    #feedbackControlDiv #feedbackControlPanelContainer .fieldset-radio label {
+      color: #fff;
+      font-size: 0.8rem; }
+    #feedbackControlDiv #feedbackControlPanelContainer hr {
+      margin: 0.5rem 0 0.75rem; }
+    #feedbackControlDiv #feedbackControlPanelContainer .close-btn {
+      position: absolute;
+      top: 0.3rem;
+      right: 0;
+      cursor: pointer; }
 
 #overallFeedbackControlPanelContainer .action-btn-wrap {
   width: 100%; }

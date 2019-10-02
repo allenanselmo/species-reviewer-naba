@@ -1,133 +1,140 @@
-import FeedbackDataModel from './FeedbackDataModel';
+import FeedbackDataModel from "./FeedbackDataModel";
 
-export default function(options={}){
+export default function(options = {}) {
+  const feedbackDataStore = {};
+  const feedbackDataModel = new FeedbackDataModel();
 
-    const feedbackDataStore = {};
-    const feedbackDataModel = new FeedbackDataModel();
+  const eventHandlers = {
+    onAdd: null,
+    onClose: null,
+    onSubmit: null,
+    onRemove: null
+  };
 
-    const eventHandlers = {
-        onAdd: null,
-        onClose: null,
-        onSubmit: null,
-        onRemove: null
-    };
+  const init = (options = {}) => {
+    eventHandlers["onAdd"] = options.onOpenHandler || null;
+    eventHandlers["onClose"] = options.onCloseHandler || null;
+    eventHandlers["onSubmit"] = options.onSubmitHandler || null;
+    eventHandlers["onRemove"] = options.onRemoveHandler || null;
+  };
 
-    const init = (options={})=>{
-        eventHandlers['onAdd'] = options.onOpenHandler || null;
-        eventHandlers['onClose'] = options.onCloseHandler || null;
-        eventHandlers['onSubmit'] = options.onSubmitHandler || null;
-        eventHandlers['onRemove'] = options.onRemoveHandler || null;
-    };
+  const open = (data = {}) => {
+    // if data is already in dataStore, use the item from data store instead because it has the status and comments info
+    const savedData = getSavedItemFromDataStore(data);
 
-    const open = (data={})=>{
+    // Override the default from modeling extents table with saved either from this session or queried from previous edits for this user
+    if (savedData) {
+      data = Object.assign(data, savedData);
+    }
 
-        // if data is already in dataStore, use the item from data store instead because it has the status and comments info 
-        data = getSavedItemFromDataStore(data) || data;
+    feedbackDataModel.init(data);
 
-        feedbackDataModel.init(data);
+    if (eventHandlers["onAdd"]) {
+      eventHandlers["onAdd"](feedbackDataModel.getFeedbackData());
+    }
 
-        if(eventHandlers['onAdd']){
-            eventHandlers['onAdd'](feedbackDataModel.getFeedbackData());
-        }
+    // console.log(feedbackDataModel.getFeedbackData());
+  };
 
-        // console.log(feedbackDataModel.getFeedbackData());
-    };
+  const close = () => {
+    feedbackDataModel.reset();
 
-    const close = ()=>{
-        feedbackDataModel.reset();
+    if (eventHandlers["onClose"]) {
+      eventHandlers["onClose"]();
+    }
+  };
 
-        if(eventHandlers['onClose']){
-            eventHandlers['onClose']()
-        }
-    };
+  const submit = () => {
+    const feedbackData = feedbackDataModel.getFeedbackData();
 
-    const submit = ()=>{
+    save(feedbackData);
 
-        const feedbackData =  feedbackDataModel.getFeedbackData();
+    if (eventHandlers["onSubmit"]) {
+      eventHandlers["onSubmit"](feedbackData);
+    }
+  };
 
-        save(feedbackData);
+  const save = feedbackData => {
+    const hucID = feedbackData.hucID;
+    const species = feedbackData.species;
 
-        if(eventHandlers['onSubmit']){
-            eventHandlers['onSubmit'](feedbackData);
-        }
-    };
+    if (!feedbackDataStore[species]) {
+      feedbackDataStore[species] = {};
+    }
 
-    const save = (feedbackData)=>{
-        const hucID = feedbackData.hucID;
-        const species = feedbackData.species;
+    feedbackDataStore[species][hucID] = JSON.parse(
+      JSON.stringify(feedbackData)
+    );
 
-        if(!feedbackDataStore[species]){
-            feedbackDataStore[species] = {};
-        }
+    // console.log(feedbackDataStore);
+  };
 
-        feedbackDataStore[species][hucID] = JSON.parse(JSON.stringify(feedbackData));
+  const remove = () => {
+    const feedbackData = feedbackDataModel.getFeedbackData();
 
-        // console.log(feedbackDataStore);
-    };
+    removeFromDataStore(feedbackData.species, feedbackData.hucID);
 
-    const remove = ()=>{
-        const feedbackData =  feedbackDataModel.getFeedbackData();
+    // console.log('remove feedback', feedbackData);
 
-        removeFromDataStore(feedbackData.species, feedbackData.hucID);
+    if (eventHandlers["onRemove"]) {
+      eventHandlers["onRemove"](feedbackData);
+    }
+  };
 
-        // console.log('remove feedback', feedbackData);
+  const removeFromDataStore = (species, hucID) => {
+    if (feedbackDataStore[species][hucID]) {
+      delete feedbackDataStore[species][hucID];
+    }
+  };
 
-        if(eventHandlers['onRemove']){
-            eventHandlers['onRemove'](feedbackData);
-        }
-    };
+  const getSavedItemFromDataStore = data => {
+    const hucID = data.hucID;
+    const species = data.species;
+    const hucName = data.hucName;
 
-    const removeFromDataStore = (species, hucID)=>{
-        if(feedbackDataStore[species][hucID]){
-            delete feedbackDataStore[species][hucID];
-        }
-    };
+    // console.log('get Saved Item From DataStore', species, hucID, feedbackDataStore[species]);
+    const savedItem =
+      typeof feedbackDataStore[species] !== "undefined" &&
+      typeof feedbackDataStore[species][hucID] !== "undefined"
+        ? feedbackDataStore[species][hucID]
+        : null;
 
-    const getSavedItemFromDataStore = (data)=>{
-        const hucID = data.hucID;
-        const species = data.species;
-        const hucName = data.hucName;
+    if (savedItem && typeof savedItem.hucName === "undefined" && hucName) {
+      savedItem.hucName = hucName;
+    }
 
-        // console.log('get Saved Item From DataStore', species, hucID, feedbackDataStore[species]);
-        const savedItem = typeof feedbackDataStore[species] !== 'undefined' && typeof feedbackDataStore[species][hucID] !== 'undefined' ? feedbackDataStore[species][hucID] : null;
-        
-        if(savedItem && typeof savedItem.hucName === 'undefined' && hucName){
-            savedItem.hucName = hucName;
-        }
+    if (savedItem) {
+      savedItem.isSaved = true;
+      savedItem.isHucInModeledRange = data.isHucInModeledRange;
+    }
 
-        if(savedItem){
-            savedItem.isSaved = true;
-            savedItem.isHucInModeledRange = data.isHucInModeledRange;
-        }
+    return savedItem;
+  };
 
-        return savedItem;
-    };
+  const batchAddToDataStore = data => {
+    // console.log(data);
 
-    const batchAddToDataStore = (data)=>{
-        // console.log(data);
+    data.forEach(d => {
+      save(d);
+    });
 
-        data.forEach(d=>{
-            save(d);
-        });
+    // console.log(feedbackDataStore);
+  };
 
-        // console.log(feedbackDataStore);
-    };
+  const getFeedbackDataBySpecies = species => {
+    // console.log('getFeedbackDataBySpecies', species);
+    return feedbackDataStore[species];
+  };
 
-    const getFeedbackDataBySpecies = (species)=>{
-        // console.log('getFeedbackDataBySpecies', species);
-        return feedbackDataStore[species];
-    };
-
-    return {
-        init,
-        open,
-        close,
-        save,
-        submit,
-        remove,
-        feedbackDataModel,
-        batchAddToDataStore,
-        getFeedbackDataBySpecies
-    };
-
+  return {
+    init,
+    open,
+    close,
+    save,
+    submit,
+    remove,
+    feedbackDataModel,
+    batchAddToDataStore,
+    getFeedbackDataBySpecies
+  };
 }

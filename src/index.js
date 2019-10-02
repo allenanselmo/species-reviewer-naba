@@ -153,6 +153,12 @@ const initApp = async oauthManager => {
       // console.log(val);
       controller.feedbackManager.feedbackDataModel.setComment(val);
     },
+    additionalFieldInputOnChange: (field, value) => {
+      controller.feedbackManager.feedbackDataModel.setAdditionalField(
+        field,
+        value
+      );
+    },
     onSubmitHandler: status => {
       // console.log('submit btn on click, new status >', status);
       if (status) {

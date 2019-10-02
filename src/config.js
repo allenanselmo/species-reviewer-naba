@@ -27,7 +27,69 @@ module.exports = {
       comment: "Comment_Long",
       status: "StatusType",
       retirementDate: "RetirementDate",
-      data_load_date: "DataLoadDate"
+      data_load_date: "DataLoadDate",
+      additionalFields: [
+        {
+          field: "ORIGIN",
+          display: "Origin",
+          editable: ["Native", "Exotic", "Unknown/Undetermined"]
+        },
+        {
+          field: "PRESENCE",
+          display: "Presence",
+          editable: ["Present", "Absent", "Unknown/Undetermined"]
+        },
+        {
+          field: "COMMENTS",
+          display: "General Comments",
+          editable: "textarea",
+          length: 255
+        },
+        {
+          field: "CONV_DATA",
+          display: "Converted Data"
+        },
+        {
+          field: "PCTOVRLAP",
+          display: "Percent Overlap"
+        },
+        {
+          field: "CONF_SCORE",
+          display: "Confidence Score",
+          editable: ["Very High", "High", "Medium", "Low", "Very Low"]
+        },
+        {
+          field: "CONFMETHOD",
+          display: "Confidence Method",
+          editable: ["Auto", "Confirmed"]
+        },
+        {
+          field: "CONF_COM",
+          display: "Confidence Comments",
+          editable: "textarea",
+          maxlength: 255
+        },
+        {
+          field: "CONF_EO",
+          display: "Confidence EO"
+        },
+        {
+          field: "REFCODE1",
+          display: "Reference Code",
+          editable: "text",
+          maxlength: 255
+        },
+        {
+          field: "SHORT_CIT1",
+          display: "Short Citation",
+          editable: "text",
+          maxlength: 255
+        },
+        {
+          field: "NEW_RECTOT",
+          display: "Total Records Count"
+        }
+      ]
     },
     overallFeedback: {
       userID: "UserID",
@@ -70,7 +132,7 @@ module.exports = {
       "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_Species_Master_Lookup/FeatureServer/0",
 
     speciesDistribution:
-      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_Species_Modeling_Extent/FeatureServer/0",
+      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_Species_Modeling_Extent_new/FeatureServer/0",
 
     speciesByUser:
       "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_Species_By_Reviewer/FeatureServer/0",
@@ -78,7 +140,7 @@ module.exports = {
     statusTable:
       "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_Status_Code_Lookup/FeatureServer/0",
     feedbackTable:
-      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_Detailed_Feedback/FeatureServer/0",
+      "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_Detailed_Feedback_new/FeatureServer/0",
     overallFeedback:
       "https://services.arcgis.com/EVsTT4nNRCwmHNyb/arcgis/rest/services/NABA_Overall_Feedback/FeatureServer/0",
 
