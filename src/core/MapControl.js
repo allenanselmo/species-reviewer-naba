@@ -162,12 +162,22 @@ const MapControl = function({
           }
         });
 
+        const rivers = new FeatureLayer({
+          portalItem: {
+            // autocasts as esri/portal/PortalItem
+            id: config.reference_layers.RIVERS.itemId
+          },
+          title: config.reference_layers.RIVERS.title,
+          visible: false
+        });
+
         // mapView.map.addMany([usaProtectedAreas, nlcdLandCover, forestType, wetLand]);
         mapView.map.add(usaProtectedAreas, 0);
         mapView.map.add(nlcdLandCover, 0);
         mapView.map.add(forestType, 0);
         mapView.map.add(wetLand, 0);
         mapView.map.add(huc6, 0);
+        mapView.map.add(rivers, 0);
       })
       .catch(err => {
         console.error(err);

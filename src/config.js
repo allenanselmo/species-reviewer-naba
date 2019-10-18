@@ -193,6 +193,10 @@ module.exports = {
     HUC6: {
       itemId: "651da243132d4ed78dadbf2e5a6c8e5a",
       title: "Watersheds (HUC6)"
+    },
+    RIVERS: {
+      itemId: "0baca6c9ffd6499fb8e5fad50174c4e0",
+      title: "USA Rivers and Streams"
     }
   },
 
