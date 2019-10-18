@@ -540,6 +540,16 @@ export default function Controller(props = {}) {
         })
       )
     ];
+
+    if (hucIds.length === 0) {
+      const species = dataModel.getSelectedSpecies();
+      const feedbackData = feedbackManager.getFeedbackDataBySpecies(species);
+      if (feedbackData) {
+        Object.keys(feedbackData).forEach(function(key) {
+          hucIds.push(feedbackData[key].hucID);
+        });
+      }
+    }
     controllerProps.zoomToHucsOnMap(hucIds);
 
     controllerProps.highligtHucsOnMap(hucIds);
@@ -612,10 +622,12 @@ export default function Controller(props = {}) {
       config.FIELD_NAME.feedbackTable.additionalFields.length > 0
     ) {
       const hucsBySpeciesData = dataModel.getHucsBySpecies(species);
-      const hucForSpeciesData = hucsBySpeciesData.filter(
-        hucData =>
-          hucData[config.FIELD_NAME.speciesDistribution.hucID] === hucID
-      );
+      const hucForSpeciesData = hucsBySpeciesData
+        ? hucsBySpeciesData.filter(
+            hucData =>
+              hucData[config.FIELD_NAME.speciesDistribution.hucID] === hucID
+          )
+        : [];
       if (hucForSpeciesData && hucForSpeciesData.length > 0) {
         config.FIELD_NAME.feedbackTable.additionalFields.forEach(addField => {
           // Pull from huc either by special hucField in the feedback additional fields, or by the same field name as in the feedback table
